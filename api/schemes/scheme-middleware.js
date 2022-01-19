@@ -11,12 +11,18 @@ const db = require('../../data/db-config');
 const checkSchemeId = async (req, res, next) => {
   // console.log("ID: ", req.params.id);
 
-  const scheme = await db('schemes')
-    .where('scheme_id', req.params.id);
-  if (scheme) {
-    next();
-  } else {
-    next({ status: 404, message: `scheme with scheme_id ${req.params.id} not found` });
+  try {
+    const scheme = await db('schemes')
+    .where('scheme_id', req.params.scheme_id)
+    .first();
+    if (scheme) {
+      next();
+    } else {
+      next({ status: 404, message: `scheme with scheme_id ${req.params.scheme_id} not found` });
+    }
+  } 
+  catch (err) {
+    next(err);
   }
 }
 
@@ -30,7 +36,7 @@ const checkSchemeId = async (req, res, next) => {
 */
 const validateScheme = (req, res, next) => {
   const { scheme_name } = req.body;
-  if (!scheme_name || scheme_name.length < 1 || typeof scheme_name !== 'string') {
+  if (!scheme_name || !scheme_name.trim() || typeof scheme_name !== 'string') {
     next({ status: 400, message: "invalid scheme_name" });
   } else {
     next();
@@ -48,7 +54,7 @@ const validateScheme = (req, res, next) => {
 */
 const validateStep = (req, res, next) => {
   const { instructions, step_number } = req.body;
-  if (!instructions || instructions.length < 1 || typeof instructions !== 'string' || typeof step_number !== 'number' || step_number < 1) {
+  if (!instructions || !instructions.trim() || typeof instructions !== 'string' || typeof step_number !== 'number' || step_number < 1) {
     next({ status: 400, message: "invalid step" });
   } else {
     next();

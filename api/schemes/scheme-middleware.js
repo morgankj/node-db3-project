@@ -1,4 +1,4 @@
-const db = require('../../data/db-config');
+const db = require("../../data/db-config");
 
 /*
   If `scheme_id` does not exist in the database:
@@ -12,19 +12,21 @@ const checkSchemeId = async (req, res, next) => {
   // console.log("ID: ", req.params.id);
 
   try {
-    const scheme = await db('schemes')
-    .where('scheme_id', req.params.scheme_id)
-    .first();
+    const scheme = await db("schemes")
+      .where("scheme_id", req.params.scheme_id)
+      .first();
     if (scheme) {
       next();
     } else {
-      next({ status: 404, message: `scheme with scheme_id ${req.params.scheme_id} not found` });
+      next({
+        status: 404,
+        message: `scheme with scheme_id ${req.params.scheme_id} not found`,
+      });
     }
-  } 
-  catch (err) {
+  } catch (err) {
     next(err);
   }
-}
+};
 
 /*
   If `scheme_name` is missing, empty string or not a string:
@@ -36,12 +38,12 @@ const checkSchemeId = async (req, res, next) => {
 */
 const validateScheme = (req, res, next) => {
   const { scheme_name } = req.body;
-  if (!scheme_name || !scheme_name.trim() || typeof scheme_name !== 'string') {
+  if (!scheme_name || !scheme_name.trim() || typeof scheme_name !== "string") {
     next({ status: 400, message: "invalid scheme_name" });
   } else {
     next();
   }
-}
+};
 
 /*
   If `instructions` is missing, empty string or not a string, or
@@ -54,15 +56,21 @@ const validateScheme = (req, res, next) => {
 */
 const validateStep = (req, res, next) => {
   const { instructions, step_number } = req.body;
-  if (!instructions || !instructions.trim() || typeof instructions !== 'string' || typeof step_number !== 'number' || step_number < 1) {
+  if (
+    !instructions ||
+    !instructions.trim() ||
+    typeof instructions !== "string" ||
+    typeof step_number !== "number" ||
+    step_number < 1
+  ) {
     next({ status: 400, message: "invalid step" });
   } else {
     next();
   }
-}
+};
 
 module.exports = {
   checkSchemeId,
   validateScheme,
   validateStep,
-}
+};

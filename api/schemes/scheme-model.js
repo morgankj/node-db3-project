@@ -1,6 +1,12 @@
 const db = require("../../data/db-config");
 
 async function find() {
+  const rows = await db("schemes as sc")
+    .leftJoin("steps as st", "sc.scheme_id", "st.scheme_id")
+    .groupBy("sc.scheme_id")
+    .select("sc.*")
+    .count("st.step_id as number_of_steps");
+  return rows;
   // EXERCISE A
   /*
     1A- Study the SQL query below running it in SQLite Studio against `data/schemes.db3`.
@@ -18,19 +24,14 @@ async function find() {
     2A- When you have a grasp on the query go ahead and build it in Knex.
     Return from this function the resulting dataset.
   */
-  const rows = await db("schemes as sc")
-    .leftJoin("steps as st", "sc.scheme_id", "st.scheme_id")
-    .groupBy("sc.scheme_id")
-    .select("sc.*")
-    .count("st.step_id as number_of_steps");
-  return rows;
 }
 
 async function findById(scheme_id) {
   const rows = await db("schemes as sc")
     .leftJoin("steps as st", "sc.scheme_id", "st.scheme_id")
     .select("sc.scheme_name", "st.*")
-    .where("sc.scheme_id", scheme_id);
+    .where("sc.scheme_id", scheme_id)
+    .orderBy("st.step_number", "asc");
 
   const result = {
     scheme_id: rows[0].scheme_id,
@@ -112,7 +113,7 @@ async function findById(scheme_id) {
   //       }
 }
 
-function findSteps(scheme_id) {
+async function findSteps(scheme_id) {
   //   // EXERCISE C
   //   /*
   //     1C- Build a query in Knex that returns the following data.
@@ -132,6 +133,25 @@ function findSteps(scheme_id) {
   //           "scheme_name": "Get Rich Quick"
   //         }
   //       ]
+
+  // select
+  //     st.step_id,
+  //     st.step_number,
+  //     st.instructions,
+  //     sc.scheme_name
+  // from steps as st
+  // left join schemes as sc
+  //     on sc.scheme_id = st.scheme_id
+  // where st.scheme_id = 3
+  // order by st.step_number;
+  const rows = await db('steps as st')
+    .join('schemes as sc', 'sc.scheme_id', 'st.scheme_id')
+    .select('st.step_id', 'st.step_number', 'st.instructions', 'sc.scheme_name')
+    .where('st.scheme_id', scheme_id)
+    .orderBy('st.step_number');
+
+    return rows;
+
 }
 
 function add(scheme) {

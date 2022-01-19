@@ -9,9 +9,10 @@ const db = require('../../data/db-config');
   }
 */
 const checkSchemeId = async (req, res, next) => {
+  // console.log("ID: ", req.params.id);
+
   const scheme = await db('schemes')
-    .where('scheme_id', req.params.id)
-    .first();
+    .where('scheme_id', req.params.id);
   if (scheme) {
     next();
   } else {
@@ -28,7 +29,12 @@ const checkSchemeId = async (req, res, next) => {
   }
 */
 const validateScheme = (req, res, next) => {
-
+  const { scheme_name } = req.body;
+  if (!scheme_name || scheme_name.length < 1 || typeof scheme_name !== 'string') {
+    next({ status: 400, message: "invalid scheme_name" });
+  } else {
+    next();
+  }
 }
 
 /*
@@ -41,7 +47,12 @@ const validateScheme = (req, res, next) => {
   }
 */
 const validateStep = (req, res, next) => {
-
+  const { instructions, step_number } = req.body;
+  if (!instructions || instructions.length < 1 || typeof instructions !== 'string' || typeof step_number !== 'number' || step_number < 1) {
+    next({ status: 400, message: "invalid step" });
+  } else {
+    next();
+  }
 }
 
 module.exports = {

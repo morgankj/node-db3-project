@@ -188,7 +188,9 @@ function addStep(scheme_id, step) {
       scheme_id
     })
     .then(() => {
-      return db("steps").where("scheme_id", scheme_id);
+      return db("steps")
+      .where("scheme_id", scheme_id)
+      .orderBy('step_number');
     });
 }
 // EXERCISE E

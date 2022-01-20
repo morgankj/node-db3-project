@@ -45,6 +45,20 @@ async function findById(scheme_id) {
       });
     }, []),
   };
+  // const result = {
+  //   scheme_id: rows[0].scheme_id,
+  //   scheme_name: rows[0].scheme_name,
+  //   steps: []
+  // }
+  // rows.forEach(row => {
+  //   if (row.step_id) {
+  //     result.steps.push({
+  //       step_id: row.step_id,
+  //       step_number: row.step_number,
+  //       instructions: row.instructions,
+  //     })
+  //   }
+  // })
   return result;
 }
 // EXERCISE B
@@ -152,19 +166,31 @@ async function findSteps(scheme_id) {
 // where st.scheme_id = 3
 // order by st.step_number;
 
-function add(scheme) {
-  return db('schemes')
+async function add(scheme) {
+  const newScheme = await db("schemes")
     .insert(scheme)
-    .then(([id]) => {
-      return findById(id);
-    })
+    .then(([scheme_id]) => {
+      return db("schemes").where("scheme_id", scheme_id);
+    });
+
+  return newScheme[0];
 }
 // EXERCISE D
 /*
     1D- This function creates a new scheme and resolves to _the newly created scheme_.
   */
 
-function addStep(scheme_id, step) {}
+function addStep(scheme_id, step) {
+  
+  return db("steps")
+    .insert({
+      ...step,
+      scheme_id
+    })
+    .then(() => {
+      return db("steps").where("scheme_id", scheme_id);
+    });
+}
 // EXERCISE E
 /*
     1E- This function adds a step to the scheme with the given `scheme_id`

@@ -9,8 +9,6 @@ const db = require("../../data/db-config");
   }
 */
 const checkSchemeId = async (req, res, next) => {
-  // console.log("ID: ", req.params.id);
-
   try {
     const scheme = await db("schemes")
       .where("scheme_id", req.params.scheme_id)
@@ -38,7 +36,7 @@ const checkSchemeId = async (req, res, next) => {
 */
 const validateScheme = (req, res, next) => {
   const { scheme_name } = req.body;
-  if (!scheme_name || !scheme_name.trim() || typeof scheme_name !== "string") {
+  if (!scheme_name || typeof scheme_name !== "string") {
     next({ status: 400, message: "invalid scheme_name" });
   } else {
     next();
@@ -58,7 +56,6 @@ const validateStep = (req, res, next) => {
   const { instructions, step_number } = req.body;
   if (
     !instructions ||
-    !instructions.trim() ||
     typeof instructions !== "string" ||
     typeof step_number !== "number" ||
     step_number < 1
